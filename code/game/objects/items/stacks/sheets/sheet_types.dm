@@ -56,7 +56,18 @@ GLOBAL_LIST_INIT(metal_recipes, list ( \
 		)), \
 	null, \
 	new/datum/stack_recipe("rack parts", /obj/item/rack_parts), \
-	new/datum/stack_recipe("closet", /obj/structure/closet, 2, time = 15, one_per_turf = TRUE, on_floor = TRUE), \
+	// GS13 EDIT
+	// adds empty, craftable lockers
+	//new/datum/stack_recipe("closet", /obj/structure/closet, 2, time = 15, one_per_turf = TRUE, on_floor = TRUE), 
+	new/datum/stack_recipe_list("closets", list( \
+		new/datum/stack_recipe("closet", /obj/structure/closet, 2, time = 15, one_per_turf = TRUE, on_floor = TRUE),
+		new/datum/stack_recipe("emergency closet", /obj/structure/closet/emcloset/empty, 2, time = 15, one_per_turf = TRUE, on_floor = TRUE), \
+		new/datum/stack_recipe("fire-safety closet", /obj/structure/closet/firecloset/empty, 2, time = 15, one_per_turf = TRUE, on_floor = TRUE), \
+		new/datum/stack_recipe("tool closet", /obj/structure/closet/toolcloset/empty, 2, time = 15, one_per_turf = TRUE, on_floor = TRUE), \
+		new/datum/stack_recipe("radiation closet", /obj/structure/closet/radiation/empty, 2, time = 15, one_per_turf = TRUE, on_floor = TRUE), \
+		new/datum/stack_recipe("biohazard gear closet", /obj/structure/closet/l3closet/empty, 2, time = 15, one_per_turf = TRUE, on_floor = TRUE), \
+	)), \
+	// GS13 END EDIT
 	null, \
 	new/datum/stack_recipe("canister", /obj/machinery/portable_atmospherics/canister, 10, time = 15, one_per_turf = TRUE, on_floor = TRUE), \
 	new/datum/stack_recipe("trash bin", /obj/structure/closet/crate/bin, 10, time = 15, one_per_turf = TRUE, on_floor = TRUE),\
@@ -487,6 +498,9 @@ GLOBAL_LIST_INIT(cardboard_recipes, list ( \
 	// holy fuck why are there so many boxes
 	new/datum/stack_recipe_list("fancy boxes", list ( \
 		new /datum/stack_recipe("donut box", /obj/item/storage/fancy/donut_box), 				\
+		// GS13 EDIT
+		new /datum/stack_recipe("large donut box", /obj/item/storage/fancy/large_donut_box, 2), 			\
+		// GS13 END EDIT
 		new /datum/stack_recipe("egg box", /obj/item/storage/fancy/egg_box), 					\
 		new /datum/stack_recipe("donk-pockets box", /obj/item/storage/box/donkpockets), 		\
 		new /datum/stack_recipe("monkey cube box", /obj/item/storage/box/monkeycubes), 			\

@@ -86,8 +86,10 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 	var/dangerous_existence //A flag for transformation spells that tells them "hey if you turn a person into one of these without preperation, they'll probably die!"
 	///Affects the speech message, for example: Motharula flutters, "My speech message is flutters!"
 	var/say_mod = "says"
-	///What languages this species can understand and say. Use a [language holder datum][/datum/language_holder] in this var.
-	var/species_language_holder = /datum/language_holder
+	/// What languages this species can understand and say.
+	/// Use a [language holder datum][/datum/language_holder] typepath in this var.
+	/// Should never be null.
+	var/datum/language_holder/species_language_holder = /datum/language_holder/human_basic
 	/**
 	  * Visible CURRENT bodyparts that are unique to a species.
 	  * DO NOT USE THIS AS A LIST OF ALL POSSIBLE BODYPARTS AS IT WILL FUCK
@@ -543,6 +545,16 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 	if(ROBOTIC_LIMBS in species_traits)
 		for(var/obj/item/bodypart/B in C.bodyparts)
 			B.change_bodypart_status(BODYPART_HYBRID, FALSE, TRUE) // Makes all Bodyparts 'robotic'.
+
+	// All languages associated with this language holder are added with source [LANGUAGE_SPECIES]
+	// rather than source [LANGUAGE_ATOM], so we can track what to remove if our species changes again
+	var/datum/language_holder/gaining_holder = GLOB.prototype_language_holders[species_language_holder]
+	for(var/language in gaining_holder.understood_languages)
+		C.grant_language(language, UNDERSTOOD_LANGUAGE, LANGUAGE_SPECIES)
+	for(var/language in gaining_holder.spoken_languages)
+		C.grant_language(language, SPOKEN_LANGUAGE, LANGUAGE_SPECIES)
+	for(var/language in gaining_holder.blocked_languages)
+		C.add_blocked_language(language, LANGUAGE_SPECIES)
 
 	SEND_SIGNAL(C, COMSIG_SPECIES_GAIN, src, old_species)
 
@@ -1671,6 +1683,11 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 		radiation = 0
 		return TRUE
 
+	// GS13 EDIT - allows for skipping negative effects of rad without removing them
+	if(HAS_TRAIT(H, TRAIT_RADRESONANCE))
+		return TRUE
+	// GS13 END EDIT
+
 	if(HAS_TRAIT(H, TRAIT_ROBOTIC_ORGANISM))
 		return //Robots are hardened against radiation, but suffer system corruption at very high levels.
 
@@ -1713,6 +1730,26 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 	return
 
 /datum/species/proc/help(mob/living/carbon/human/user, mob/living/carbon/human/target, datum/martial_art/attacker_style)
+ 	//GS13 edit start belly rub
+	if(user.zone_selected == BODY_ZONE_PRECISE_GROIN && user.health >= 0 && target == user)
+		user.visible_message("<span class='notice'>[user] rubs their belly!</span>", \
+		"<span class='notice'>You rub your belly!</span>")
+		user.reduce_fullness(rand(4,16), FALSE)
+		if(!HAS_TRAIT(user, TRAIT_ROBOTIC_ORGANISM))
+			user.adjust_nutrition(rand(-5,-1))
+		SEND_SIGNAL(user, COMSIG_ADD_MOOD_EVENT, "bellyrub_good", /datum/mood_event/bellyrub_good)
+		if(prob(5))
+			user.visible_message("<span class='notice'>While [user] rubs their belly, the spontaneous belch comes out!</span>", \
+			"<span class='notice'>Your belly massage made you to burp!</span>")
+			user.emote(pick("belch","burp"))
+		if(prob(10))
+			user.emote("gurgle")
+		user.DelayNextAction(100)
+		playsound(user, 'sound/weapons/thudswoosh.ogg', 50, 1, -1)
+		return FALSE
+
+	//GS13 edit end belly rub
+
 	if(target.health >= 0 && !HAS_TRAIT(target, TRAIT_FAKEDEATH))
 		target.help_shake_act(user)
 		if(target != user)

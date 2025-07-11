@@ -35,6 +35,8 @@
 	for(var/trait in traits_list)
 		ADD_TRAIT(target, trait, src)
 
+	to_chat(target_human, "<span class='warning'><b>You suddenly feel a lot more docile and peaceful, your body turning lethargic and your mind hazy.</b></span>")
+
 	target_human.nutri_mult += 1
 	return TRUE
 
@@ -50,9 +52,10 @@
 	for(var/trait in traits_list)
 		REMOVE_TRAIT(target_human, trait, src)
 
+	to_chat(target_human, "<span class='warning'><b>Your mind sharpens and you feel more lively again, the soothing thoughts of peacefully lazing around going away.</b></span>")
+
 	target_human.nutri_mult -= 1
 	return TRUE
-
 
 /obj/item/implant/docile/livestock
 	name = "livestock implant"
@@ -66,14 +69,22 @@
 		TRAIT_LIVESTOCK,
 		TRAIT_NO_MISC,
 		TRAIT_NORUNNING,
+		TRAIT_MILKY,
+		TRAIT_VORACIOUS,
+		TRAIT_CHUNKYFINGERS,
+		TRAIT_HEAT,
 	)
-
 	/// What is the name of the mob before we change it?
 	var/stored_name = ""
 	/// What name do we want to give the mob before adding the randomized number
 	var/name_to_give = "Livestock"
 	/// How much do we want to modifiy the productivity stats of the mob's current sex organs by?
 	var/productivity_mult = 4
+
+/obj/item/implant/docile/livestock/justfat //gs13 - for admin fuckery
+	name = "hacked livestock implant"
+	required_fatness = 0
+
 
 /obj/item/implant/docile/livestock/can_be_implanted_in(mob/living/target)
 	. = ..()
@@ -94,6 +105,8 @@
 	target_human.real_name = new_name
 	target_human.name = new_name
 
+	to_chat(target, "<span class='warning'><b>As your mind slows down, you experience a strange desire to be good, obedient and fat cattle...</b></span>")
+
 	if(target_human?.getorganslot("testicles"))
 		var/obj/item/organ/genital/testicles/balls = target_human?.getorganslot("testicles")
 		balls.fluid_mult = balls.fluid_mult * productivity_mult
@@ -112,6 +125,9 @@
 	var/mob/living/carbon/human/target_human = source
 	target_human.real_name = stored_name
 	target_human.name = stored_name
+
+	to_chat(source, "<span class='warning'><b>Your mind sharpens and you feel more lively again, the soothing thoughts of peacefully lazing around going away.</b></span>")
+
 
 	if(target_human?.getorganslot("testicles"))
 		var/obj/item/organ/genital/testicles/balls = target_human?.getorganslot("testicles")
@@ -132,3 +148,28 @@
 	name = "implant case - 'Livestock'"
 	desc = "A glass case containing a livestock implant. Functions similar to the docility implant, but changes the implantee's name and makes them even more helpless. cannot be combined with the docility implant."
 	imp_type = /obj/item/implant/docile/livestock
+
+/obj/item/implantcase/docile/livestock/justfat
+	name = "implant case - 'Livestock - hacked ver'"
+	desc = "A glass case containing a livestock implant. Functions similar to the docility implant, but changes the implantee's name and makes them even more helpless. cannot be combined with the docility implant. This one seems to apply to people who are just fat, rather than immobile."
+	imp_type = /obj/item/implant/docile/livestock/justfat
+
+
+//gs13 - techweb designs
+/datum/design/docility_implant //currently in nutri tech tools
+	name = "Docility Implant"
+	id = "docility_implant"
+	build_type = PROTOLATHE
+	materials = list(/datum/material/iron = 5000, /datum/material/glass = 1500, /datum/material/calorite = 1500, /datum/material/silver = 1500)
+	build_path = /obj/item/implantcase/docile
+	category = list("Medical Designs")
+	departmental_flags = DEPARTMENTAL_FLAG_SERVICE | DEPARTMENTAL_FLAG_SCIENCE | DEPARTMENTAL_FLAG_SECURITY
+
+/datum/design/livestock_implant //currently in illegal tech web node
+	name = "Livestock Implant"
+	id = "livestock_implant"
+	build_type = PROTOLATHE
+	materials = list(/datum/material/iron = 5000, /datum/material/glass = 3000, /datum/material/calorite = 3000, /datum/material/silver = 1500)
+	build_path = /obj/item/implantcase/docile/livestock
+	category = list("Medical Designs")
+	departmental_flags = DEPARTMENTAL_FLAG_SERVICE | DEPARTMENTAL_FLAG_SCIENCE | DEPARTMENTAL_FLAG_SECURITY

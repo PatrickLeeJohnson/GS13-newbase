@@ -139,7 +139,7 @@ Credit where due:
 	required_enemies = 3
 	recommended_enemies = 5
 	enemy_minimum_age = 7
-	protected_jobs = list("Prisoner", "AI", "Cyborg", "Security Officer", "Warden", "Detective", "Head of Security", "Head of Personnel", "Chief Engineer", "Chief Medical Officer", "Research Director", "Quartermaster") //Silicons can eventually be converted
+	protected_jobs = list("Prisoner", "AI", "Cyborg", "Security Officer", "Security Cadet", "Warden", "Detective", "Head of Security", "Head of Personnel", "Chief Engineer", "Chief Medical Officer", "Research Director", "Quartermaster") //Silicons can eventually be converted + GS13 Edit: Excempting cadets from antagery
 	restricted_jobs = list("Chaplain", "Captain")
 	announce_span = "brass"
 	announce_text = "Servants of Ratvar are trying to summon the Justiciar!\n\
@@ -291,7 +291,6 @@ Credit where due:
 	W.update_label()
 	if(plasmaman && !visualsOnly) //If we need to breathe from the plasma tank, we should probably start doing that
 		H.internal = H.get_item_for_held_index(2)
-		H.update_internals_hud_icon(1)
 	PDA.owner = H.real_name
 	PDA.ownjob = "Assistant"
 	PDA.update_label()

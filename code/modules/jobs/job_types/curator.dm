@@ -41,8 +41,7 @@
 	backpack_contents = list(
 		/obj/item/choice_beacon/hero = 1,
 		/obj/item/soapstone = 1,
-		/obj/item/barcodescanner = 1
-	)
+		/obj/item/barcodescanner = 1)
 
 /datum/outfit/job/curator/post_equip(mob/living/carbon/human/H, visualsOnly = FALSE, client/preference_source)
 	..()
@@ -50,4 +49,5 @@
 	if(visualsOnly)
 		return
 
-	H.grant_all_languages(TRUE, TRUE, TRUE, LANGUAGE_CURATOR)
+	H.grant_all_languages(source = LANGUAGE_CURATOR)
+	H.remove_blocked_language(GLOB.all_languages, source=LANGUAGE_ALL)

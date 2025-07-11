@@ -1,4 +1,4 @@
-GLOBAL_LIST_INIT(uncapped_resize_areas, list(/area/command/bridge, /area/maintenance, /area/security/prison, /area/holodeck, /area/commons/vacant_room/office, /area/space, /area/ruin, /area/lavaland, /area/awaymission, /area/centcom, /area/fatlab))
+GLOBAL_LIST_INIT(uncapped_resize_areas, list(/area/command/bridge, /area/maintenance, /area/security/prison, /area/holodeck, /area/commons/vacant_room/office, /area/space, /area/ruin, /area/lavaland, /area/awaymission, /area/centcom, /area/fatlab, /area/xenoarch))
 
 /mob/living
 	var/burpslurring = 0 //GS13 - necessary due to "say" being defined by mob/living
@@ -25,6 +25,11 @@ GLOBAL_LIST_INIT(uncapped_resize_areas, list(/area/command/bridge, /area/mainten
 
 	var/fullness = FULLNESS_LEVEL_HALF_FULL
 	var/fullness_reduction_timer = 0 // When was the last time they emoted to reduce their fullness
+
+	/// How many mobs have been digested by this mob?
+	var/prey_digested = 0
+	/// How many humanoid mobs have been digested by this mob?
+	var/human_prey_digested = 0
 
 /**
 * Adjusts the fatness level of the parent mob.
@@ -130,6 +135,10 @@ GLOBAL_LIST_INIT(uncapped_resize_areas, list(/area/command/bridge, /area/mainten
 			if(!client?.prefs?.weight_gain_atmos)
 				return FALSE
 
+		if(TRANSFORMATION)
+			if(!client?.prefs?.transformation)
+				return FALSE
+
 		if(FATTENING_TYPE_WEIGHT_LOSS)
 			if(HAS_TRAIT(src, TRAIT_WEIGHT_LOSS_IMMUNE))
 				return FALSE
@@ -216,9 +225,9 @@ GLOBAL_LIST_INIT(uncapped_resize_areas, list(/area/command/bridge, /area/mainten
 		var/xwg_size = sqrt(fatness/FATNESS_LEVEL_BLOB)
 		xwg_size = min(xwg_size, RESIZE_MACRO)
 		xwg_size = max(xwg_size, custom_body_size)
-		if(xwg_size > RESIZE_BIG) //check if the size needs capping otherwise don't bother searching the list
+		if(xwg_size > RESIZE_A_HUGEBIG) //check if the size needs capping otherwise don't bother searching the list
 			if(!is_type_in_list(get_area(src), GLOB.uncapped_resize_areas)) //if the area is not int the uncapped whitelist and new size is over the cap
-				xwg_size = RESIZE_BIG
+				xwg_size = RESIZE_A_HUGEBIG
 		resize(xwg_size)
 
 /proc/get_fatness_level_name(fatness_amount)
@@ -274,6 +283,10 @@ GLOBAL_LIST_INIT(uncapped_resize_areas, list(/area/command/bridge, /area/mainten
 	return needed_fatness
 
 /mob/living/carbon/proc/applyFatnessDamage(amount)
+	if(!client?.prefs?.weight_gain_weapons) // If we can't fatten them through weapons, apply stamina damage
+		adjustStaminaLoss(amount)
+		return TRUE
+
 	var/fat_to_add = ((amount * CONFIG_GET(number/damage_multiplier)) * FAT_DAMAGE_TO_FATNESS)
 	adjust_fatness(fat_to_add, FATTENING_TYPE_WEAPON)
 	return fat_to_add

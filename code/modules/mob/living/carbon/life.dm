@@ -329,12 +329,9 @@
 	if(internal)
 		if(internal.loc != src)
 			internal = null
-			update_internals_hud_icon(0)
 		else if (!internals && !getorganslot(ORGAN_SLOT_BREATHING_TUBE))
 			internal = null
-			update_internals_hud_icon(0)
 		else
-			update_internals_hud_icon(1)
 			. = internal.remove_air_volume(volume_needed)
 			if(!.)
 				return FALSE //to differentiate between no internals and active, but empty internals
@@ -442,7 +439,9 @@
 				dna.remove_mutation(HM.type)
 
 	radiation -= min(radiation, RAD_LOSS_PER_TICK)
-	if(radiation > RAD_MOB_SAFE)
+	// GS13 EDIT allows for skipping of toxic damage from rads
+	// if(radiation > RAD_MOB_SAFE)
+	if(radiation > RAD_MOB_SAFE && !HAS_TRAIT(src, TRAIT_RADRESONANCE))	// GS13 END EDIT
 		if(!HAS_TRAIT(src, TRAIT_ROBOTIC_ORGANISM))
 			adjustToxLoss(log(radiation-RAD_MOB_SAFE)*RAD_TOX_COEFFICIENT)
 		else
@@ -527,6 +526,7 @@ GLOBAL_LIST_INIT(ballmer_windows_me_msg, list("Yo man, what if, we like, uh, put
 			if(!SSD)
 				add_status_indicator("ssd")
 				SSD = TRUE
+				lastclienttime = world.time //GS13 Editception: SSD timer
 		else
 			if(SSD)
 				remove_status_indicator("ssd")

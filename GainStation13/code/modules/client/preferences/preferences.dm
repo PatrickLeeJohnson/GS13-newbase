@@ -17,6 +17,8 @@
 	var/weight_gain_nanites = FALSE
 	//Weight gain from atmos gasses
 	var/weight_gain_atmos = FALSE
+	///content related to transformation
+	var/transformation = FALSE
 	///Blueberry Inflation
 	var/blueberry_inflation = FALSE
 	///Extreme weight gain
@@ -27,6 +29,8 @@
 	var/weight_gain_permanent = FALSE
 	/// At what weight will you start to get stuck in airlocks?
 	var/stuckage = FALSE
+	// Percentage chance to get stuck in doors. Setting this to 0 will make the chance depend on the person's weight
+	var/stuckage_chance = 0
 	/// At what weight will you start to break chairs?
 	var/chair_breakage = FALSE
 	/// Are items that only affect those at high weights able to affect the player?
@@ -54,6 +58,8 @@
 	var/helplessness_clothing_jumpsuit = FALSE
 	///What fatness level prevents the user from wearing non-jumpsuit clothing
 	var/helplessness_clothing_misc = FALSE
+	// What fatness level prevents the user from wearing belts. Also affects the max weight the PBS Belt can hide
+	var/helplessness_belts = FALSE
 	///What fatness level prevents the user from wearing anything on their back
 	var/helplessness_clothing_back = FALSE
 	///What fatness level prevents the user from being buckled to anything?
